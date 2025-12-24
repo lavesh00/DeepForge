@@ -1,0 +1,14 @@
+pydantic>=2.0
+pyyaml>=6.0
+click>=8.0
+gitpython>=3.1
+psutil>=5.9
+requests>=2.31.0
+fastapi>=0.100
+uvicorn>=0.23
+pytest>=7.4
+pytest-asyncio>=0.21
+transformers>=4.30
+torch>=2.0
+huggingface-hub>=0.16
+
