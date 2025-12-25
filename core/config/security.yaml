@@ -1,0 +1,39 @@
+# DeepForge Security Configuration
+
+approval:
+  auto_approve_low_risk: true
+  require_approval_threshold: 0.6
+  timeout_minutes: 30
+
+sandbox:
+  network_access: false
+  filesystem_access: "workspace_only"
+  allow_shell: false
+
+allowlist:
+  modules:
+    - "json"
+    - "math"
+    - "datetime"
+    - "collections"
+    - "typing"
+    - "dataclasses"
+    - "re"
+  commands: []
+
+denylist:
+  patterns:
+    - "rm -rf"
+    - "format"
+    - "del /f"
+    - "__import__"
+    - "eval("
+    - "exec("
+
+audit:
+  enabled: true
+  log_approvals: true
+  log_denials: true
+  retention_days: 90
+
+
