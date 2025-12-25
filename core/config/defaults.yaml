@@ -1,0 +1,52 @@
+# DeepForge Default Configuration
+
+system:
+  name: "DeepForge"
+  version: "0.1.0"
+  environment: "development"
+
+paths:
+  workspace:
+    base_dir: "${HOME}/deepforge_workspaces"
+  state:
+    missions: "${HOME}/.deepforge/state/missions"
+  logs:
+    dir: "${HOME}/.deepforge/logs"
+  models:
+    cache: "${HOME}/.deepforge/models"
+
+execution:
+  sandbox:
+    type: "native"
+    timeout_seconds: 300
+    memory_limit_mb: 4096
+  parallel_tasks: 4
+
+models:
+  default_model: "deepseek-coder"
+  # Primary: v3.2-full (2025), fallback chain: v2-lite -> 1.3b
+  model_name: "deepseek-ai/deepseek-coder-v3.2-full"
+  fallback_chain:
+    - "deepseek-ai/deepseek-coder-v2-lite-instruct"
+    - "deepseek-ai/deepseek-coder-1.3b-base"
+  auto_download: true
+  max_loaded_models: 2
+  max_memory_mb: 16384
+  # Context window for v3.2
+  max_context_tokens: 131072  # 128k
+  # Code generation settings
+  temperature: 0.2  # Lower for code fidelity
+  # Enable chain mode for multi-step refinement
+  enable_chain_mode: true
+  max_chain_steps: 5
+
+logging:
+  level: "INFO"
+  format: "json"
+  file: "app.log"
+
+api:
+  host: "0.0.0.0"
+  port: 8080
+  cors_origins: ["*"]
+
