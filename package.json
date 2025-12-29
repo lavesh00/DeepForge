@@ -1,0 +1,42 @@
+{
+  "name": "deepforge",
+  "version": "0.1.0",
+  "description": "Agent-First IDE with DeepSeek V3.2",
+  "main": "electron/main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "NODE_ENV=development electron .",
+    "build": "electron-builder"
+  },
+  "keywords": [
+    "ide",
+    "ai",
+    "agent",
+    "deepseek"
+  ],
+  "author": "DeepForge",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^28.3.3",
+    "electron-builder": "^24.9.1",
+    "node-fetch": "^3.3.2"
+  },
+  "build": {
+    "appId": "com.deepforge.app",
+    "productName": "DeepForge",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "electron/**/*",
+      "interface/ui/electron/**/*",
+      "**/*.py",
+      "!**/__pycache__/**/*"
+    ]
+  }
+}
+
+
+
+
+
