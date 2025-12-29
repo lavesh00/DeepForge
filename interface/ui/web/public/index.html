@@ -1,0 +1,1473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeepForge - Autonomous AI Development Platform</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-tertiary: #1a1a24;
+            --bg-hover: #22222e;
+            --accent-primary: #6366f1;
+            --accent-secondary: #8b5cf6;
+            --accent-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+            --text-primary: #f0f0f5;
+            --text-secondary: #a0a0b0;
+            --text-muted: #606070;
+            --success: #10b981;
+            --error: #ef4444;
+            --warning: #f59e0b;
+            --border: #2a2a3a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--accent-gradient);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        .logo-text {
+            font-size: 20px;
+            font-weight: 700;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .sidebar-nav {
+            padding: 16px 12px;
+            flex: 1;
+        }
+
+        .nav-section {
+            margin-bottom: 24px;
+        }
+
+        .nav-section-title {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            padding: 0 12px;
+            margin-bottom: 8px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .nav-item:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .nav-item.active {
+            background: var(--accent-primary);
+            color: white;
+        }
+
+        .nav-icon {
+            width: 18px;
+            height: 18px;
+            opacity: 0.7;
+        }
+
+        .missions-list {
+            padding: 8px 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .mission-item {
+            padding: 10px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-bottom: 4px;
+            transition: all 0.15s ease;
+        }
+
+        .mission-item:hover {
+            background: var(--bg-hover);
+        }
+
+        .mission-item.active {
+            background: var(--bg-tertiary);
+            border-left: 2px solid var(--accent-primary);
+        }
+
+        .mission-title {
+            font-size: 13px;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 4px;
+        }
+
+        .mission-status {
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+        }
+
+        .status-dot.completed { background: var(--success); }
+        .status-dot.executing { background: var(--warning); animation: pulse 1.5s infinite; }
+        .status-dot.failed { background: var(--error); }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--bg-secondary);
+        }
+
+        .header-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--accent-gradient);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-hover);
+        }
+
+        /* Terminal Area */
+        .terminal-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-primary);
+            overflow: hidden;
+        }
+
+        .terminal-output {
+            flex: 1;
+            padding: 20px 24px;
+            overflow-y: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .output-block {
+            margin-bottom: 20px;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        .output-header {
+            padding: 12px 16px;
+            background: var(--bg-tertiary);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .output-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .output-timestamp {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .output-content {
+            padding: 16px;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 8px 0;
+        }
+
+        .step-status {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .step-status.success {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+        }
+
+        .step-status.running {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+        }
+
+        .step-status.pending {
+            background: var(--bg-tertiary);
+            color: var(--text-muted);
+        }
+
+        .step-info {
+            flex: 1;
+        }
+
+        .step-name {
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+
+        .step-detail {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .code-block {
+            background: var(--bg-primary);
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 12px;
+            overflow-x: auto;
+        }
+
+        .code-block pre {
+            margin: 0;
+            color: var(--text-secondary);
+        }
+
+        .code-block .keyword { color: #c792ea; }
+        .code-block .string { color: #c3e88d; }
+        .code-block .function { color: #82aaff; }
+        .code-block .comment { color: #546e7a; }
+
+        /* Input Area */
+        .input-container {
+            padding: 16px 24px 24px;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border);
+        }
+
+        .input-wrapper {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            display: flex;
+            align-items: flex-start;
+            padding: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .input-wrapper:focus-within {
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .input-prefix {
+            padding: 12px 12px 12px 16px;
+            color: var(--accent-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .command-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            padding: 12px 0;
+            resize: none;
+            min-height: 24px;
+            max-height: 120px;
+        }
+
+        .command-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .input-actions {
+            display: flex;
+            gap: 8px;
+            padding: 8px;
+        }
+
+        .input-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s ease;
+        }
+
+        .input-btn.send {
+            background: var(--accent-gradient);
+            color: white;
+        }
+
+        .input-btn.send:hover {
+            transform: scale(1.05);
+        }
+
+        .input-hint {
+            margin-top: 12px;
+            font-size: 12px;
+            color: var(--text-muted);
+            display: flex;
+            gap: 20px;
+        }
+
+        .hint-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .hint-key {
+            background: var(--bg-tertiary);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+        }
+
+        /* Welcome Screen */
+        .welcome-screen {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .welcome-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--accent-gradient);
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            margin-bottom: 24px;
+            box-shadow: 0 20px 40px -12px rgba(99, 102, 241, 0.4);
+        }
+
+        .welcome-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .welcome-subtitle {
+            font-size: 16px;
+            color: var(--text-secondary);
+            max-width: 500px;
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .quick-action {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .quick-action:hover {
+            background: var(--bg-tertiary);
+            border-color: var(--accent-primary);
+            transform: translateY(-2px);
+        }
+
+        .quick-action-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--bg-tertiary);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-bottom: 12px;
+        }
+
+        .quick-action-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .quick-action-desc {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
+
+        /* Animations */
+        .fade-in {
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 8px 0;
+        }
+
+        .typing-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--text-muted);
+            border-radius: 50%;
+            animation: typing 1.4s infinite ease-in-out;
+        }
+
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-4px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">DF</div>
+                    <span class="logo-text">DeepForge</span>
+                </div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Navigation</div>
+                    <div class="nav-item active" data-action="showWelcome">
+                        <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                        </svg>
+                        Home
+                    </div>
+                    <div class="nav-item" data-action="showTerminal">
+                        <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        Terminal
+                    </div>
+                    <div class="nav-item" data-action="showModels">
+                        <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"/>
+                        </svg>
+                        Models
+                    </div>
+                    <div class="nav-item" data-action="showSettings">
+                        <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                        Settings
+                    </div>
+                    <div class="nav-item" data-action="showChat">
+                        <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                        </svg>
+                        Chat
+                    </div>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Recent Missions</div>
+                    <div class="missions-list" id="missionsList">
+                        <!-- Missions will be loaded here -->
+                    </div>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="header">
+                <h1 class="header-title" id="headerTitle">Welcome to DeepForge</h1>
+                <div class="header-actions">
+                    <button class="btn btn-secondary">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                        </svg>
+                        Refresh
+                    </button>
+                    <button class="btn btn-primary" id="newMissionBtn">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                        </svg>
+                        New Mission
+                    </button>
+                </div>
+            </header>
+
+            <div class="terminal-container">
+                <!-- Welcome Screen -->
+                <div class="welcome-screen" id="welcomeScreen">
+                    <div class="welcome-icon">DF</div>
+                    <h2 class="welcome-title">AI, at your command</h2>
+                    <p class="welcome-subtitle">
+                        Describe what you want to build using natural language. DeepForge will plan, code, test, and deploy your project autonomously.
+                    </p>
+                    <div class="quick-actions">
+                        <div class="quick-action" data-command="Create a REST API with FastAPI and PostgreSQL">
+                            <div class="quick-action-icon">API</div>
+                            <div class="quick-action-title">REST API</div>
+                            <div class="quick-action-desc">FastAPI + PostgreSQL backend</div>
+                        </div>
+                        <div class="quick-action" data-command="Create a full-stack web app with React and Node.js">
+                            <div class="quick-action-icon">WEB</div>
+                            <div class="quick-action-title">Full-Stack Web App</div>
+                            <div class="quick-action-desc">React + Node.js application</div>
+                        </div>
+                        <div class="quick-action" data-command="Create a CLI tool with Python and Click">
+                            <div class="quick-action-icon">CLI</div>
+                            <div class="quick-action-title">CLI Tool</div>
+                            <div class="quick-action-desc">Python command-line interface</div>
+                        </div>
+                        <div class="quick-action" data-command="Create a machine learning pipeline with scikit-learn">
+                            <div class="quick-action-icon">ML</div>
+                            <div class="quick-action-title">ML Pipeline</div>
+                            <div class="quick-action-desc">Machine learning workflow</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Terminal Output -->
+                <div class="terminal-output" id="terminalOutput" style="display: none;">
+                    <!-- Output blocks will be added here -->
+                </div>
+
+                <!-- Models Screen -->
+                <div class="welcome-screen" id="modelsScreen" style="display: none;">
+                    <div class="welcome-icon">AI</div>
+                    <h2 class="welcome-title">Model Management</h2>
+                    <div id="modelsInfo" style="max-width: 800px; text-align: left; margin-top: 40px;">
+                        <div class="typing-indicator">
+                            <div class="typing-dot"></div>
+                            <div class="typing-dot"></div>
+                            <div class="typing-dot"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings Screen -->
+                <div class="welcome-screen" id="settingsScreen" style="display: none;">
+                    <div class="welcome-icon">⚙</div>
+                    <h2 class="welcome-title">Settings</h2>
+                    <div style="max-width: 600px; text-align: left; margin-top: 40px;">
+                        <div class="quick-action" style="margin-bottom: 20px;">
+                            <div class="quick-action-icon">🔧</div>
+                            <div class="quick-action-title">Configuration</div>
+                            <div class="quick-action-desc">Edit config files in ~/.deepforge/</div>
+                        </div>
+                        <div class="quick-action" style="margin-bottom: 20px;">
+                            <div class="quick-action-icon">📊</div>
+                            <div class="quick-action-title">Model Settings</div>
+                            <div class="quick-action-desc">Configure AI models and parameters</div>
+                        </div>
+                        <div class="quick-action">
+                            <div class="quick-action-icon">🗑️</div>
+                            <div class="quick-action-title">Clear Cache</div>
+                            <div class="quick-action-desc">Remove cached models and workspaces</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat Screen -->
+                <div class="terminal-output" id="chatScreen" style="display: none;">
+                    <div class="output-block fade-in">
+                        <div class="output-header">
+                            <div class="output-title">Chat - Iterative Refinement</div>
+                        </div>
+                        <div class="output-content" id="chatOutput" style="max-height: 500px; overflow-y: auto;">
+                            <div class="step-item">
+                                <div class="step-info">
+                                    <div class="step-name" style="color: var(--text-secondary);">Type your refinement request below</div>
+                                    <div class="step-detail">Example: "add delete endpoint" or "fix the auth bug"</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="input-container">
+                <div class="input-wrapper">
+                    <span class="input-prefix">#</span>
+                    <textarea 
+                        class="command-input" 
+                        id="commandInput"
+                        placeholder="Describe what you want to build..."
+                        rows="1"
+                        onkeydown="handleKeyDown(event)"
+                        oninput="autoResize(this)"
+                    ></textarea>
+                    <div class="input-actions">
+                        <button class="input-btn send" onclick="runCommand()">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="input-hint">
+                    <div class="hint-item">
+                        <span class="hint-key">Enter</span>
+                        <span>to run</span>
+                    </div>
+                    <div class="hint-item">
+                        <span class="hint-key">Shift+Enter</span>
+                        <span>for new line</span>
+                    </div>
+                    <div class="hint-item">
+                        <span class="hint-key">#</span>
+                        <span>for AI suggestions</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8080/api';
+        let currentMission = null;
+
+        // Auto-resize textarea
+        function autoResize(el) {
+            el.style.height = 'auto';
+            el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+        }
+
+        // Handle keyboard input
+        function handleKeyDown(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                runCommand();
+            }
+        }
+
+        // Focus input
+        function focusInput() {
+            document.getElementById('commandInput').focus();
+        }
+
+        // Show welcome screen
+        function showWelcome() {
+            const welcomeScreen = document.getElementById('welcomeScreen');
+            const terminalOutput = document.getElementById('terminalOutput');
+            const headerTitle = document.getElementById('headerTitle');
+            
+            if (welcomeScreen) welcomeScreen.style.display = 'flex';
+            if (terminalOutput) terminalOutput.style.display = 'none';
+            if (headerTitle) headerTitle.textContent = 'Welcome to DeepForge';
+            
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            const navItems = document.querySelectorAll('.nav-item');
+            if (navItems.length > 0) navItems[0].classList.add('active');
+        }
+
+        // Show terminal
+        function showTerminal() {
+            document.getElementById('welcomeScreen').style.display = 'none';
+            document.getElementById('terminalOutput').style.display = 'block';
+            document.getElementById('modelsScreen').style.display = 'none';
+            document.getElementById('settingsScreen').style.display = 'none';
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-item')[1].classList.add('active');
+            document.getElementById('headerTitle').textContent = 'Terminal';
+        }
+
+        // Show models
+        function showModels() {
+            const welcomeScreen = document.getElementById('welcomeScreen');
+            const terminalOutput = document.getElementById('terminalOutput');
+            const modelsScreen = document.getElementById('modelsScreen');
+            const settingsScreen = document.getElementById('settingsScreen');
+            const chatScreen = document.getElementById('chatScreen');
+            const headerTitle = document.getElementById('headerTitle');
+            
+            if (welcomeScreen) welcomeScreen.style.display = 'none';
+            if (terminalOutput) terminalOutput.style.display = 'none';
+            if (modelsScreen) modelsScreen.style.display = 'block';
+            if (settingsScreen) settingsScreen.style.display = 'none';
+            if (chatScreen) chatScreen.style.display = 'none';
+            
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            const navItems = document.querySelectorAll('.nav-item');
+            if (navItems.length > 2) navItems[2].classList.add('active');
+            if (headerTitle) headerTitle.textContent = 'Models';
+            loadModelsInfo();
+        }
+
+        // Show settings
+        function showSettings() {
+            const welcomeScreen = document.getElementById('welcomeScreen');
+            const terminalOutput = document.getElementById('terminalOutput');
+            const modelsScreen = document.getElementById('modelsScreen');
+            const settingsScreen = document.getElementById('settingsScreen');
+            const chatScreen = document.getElementById('chatScreen');
+            const headerTitle = document.getElementById('headerTitle');
+            
+            if (welcomeScreen) welcomeScreen.style.display = 'none';
+            if (terminalOutput) terminalOutput.style.display = 'none';
+            if (modelsScreen) modelsScreen.style.display = 'none';
+            if (settingsScreen) settingsScreen.style.display = 'block';
+            if (chatScreen) chatScreen.style.display = 'none';
+            
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            const navItems = document.querySelectorAll('.nav-item');
+            if (navItems.length > 3) navItems[3].classList.add('active');
+            if (headerTitle) headerTitle.textContent = 'Settings';
+        }
+
+        // Show chat
+        function showChat() {
+            const welcomeScreen = document.getElementById('welcomeScreen');
+            const terminalOutput = document.getElementById('terminalOutput');
+            const modelsScreen = document.getElementById('modelsScreen');
+            const settingsScreen = document.getElementById('settingsScreen');
+            const chatScreen = document.getElementById('chatScreen');
+            const headerTitle = document.getElementById('headerTitle');
+            
+            if (welcomeScreen) welcomeScreen.style.display = 'none';
+            if (terminalOutput) terminalOutput.style.display = 'none';
+            if (modelsScreen) modelsScreen.style.display = 'none';
+            if (settingsScreen) settingsScreen.style.display = 'none';
+            if (chatScreen) chatScreen.style.display = 'block';
+            
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            const navItems = document.querySelectorAll('.nav-item');
+            if (navItems.length > 4) navItems[4].classList.add('active');
+            if (headerTitle) headerTitle.textContent = 'Chat - Iterative Refinement';
+            loadChatHistory();
+        }
+
+        // Run quick action
+        function runQuickAction(command) {
+            console.log('runQuickAction called with:', command);
+            const input = document.getElementById('commandInput');
+            if (input) {
+                input.value = command;
+                console.log('Input value set to:', command);
+                runCommand();
+            } else {
+                console.error('commandInput element not found!');
+            }
+        }
+
+        // Run command
+        async function runCommand() {
+            const input = document.getElementById('commandInput');
+            const command = input.value.trim();
+            if (!command) return;
+
+            showTerminal();
+            input.value = '';
+            autoResize(input);
+
+            const output = document.getElementById('terminalOutput');
+            document.getElementById('headerTitle').textContent = command.substring(0, 50) + (command.length > 50 ? '...' : '');
+
+            // Create output block
+            const block = document.createElement('div');
+            block.className = 'output-block fade-in';
+            const outputId = 'output_' + Date.now();
+            block.innerHTML = `
+                <div class="output-header">
+                    <div class="output-title">
+                        <span class="status-dot executing"></span>
+                        Mission: ${command.substring(0, 40)}...
+                    </div>
+                    <span class="output-timestamp">${new Date().toLocaleTimeString()}</span>
+                </div>
+                <div class="output-content" id="${outputId}">
+                    <div class="typing-indicator">
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                    </div>
+                </div>
+            `;
+            output.insertBefore(block, output.firstChild);
+
+            // Call real API
+            await executeMission(command, document.getElementById(outputId), block);
+        }
+
+        // Execute mission via API
+        async function executeMission(description, outputEl, blockEl) {
+            try {
+                const response = await fetch(`${API_BASE}/missions`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ description: description })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const mission = await response.json();
+                
+                // Show model info
+                let modelInfo = 'Using: Placeholder Code Generator (No AI model configured)';
+                try {
+                    const modelsResponse = await fetch(`${API_BASE}/models/active`);
+                    if (modelsResponse.ok) {
+                        const modelData = await modelsResponse.json();
+                        if (modelData.model) {
+                            modelInfo = `Using: ${modelData.model.name || modelData.model.id}`;
+                        }
+                    }
+                } catch (e) {
+                    // Ignore model info errors
+                }
+
+                // Display mission execution
+                let html = `<div class="step-item fade-in">
+                    <div class="step-info">
+                        <div class="step-name" style="color: var(--text-secondary); font-size: 12px;">${modelInfo}</div>
+                    </div>
+                </div>`;
+
+                // Get mission details
+                const detailsResponse = await fetch(`${API_BASE}/missions/${mission.mission_id}`);
+                if (detailsResponse.ok) {
+                    const details = await detailsResponse.json();
+                    
+                    // Show steps based on mission description
+                    const steps = generateStepsFromDescription(description);
+                    
+                    for (const step of steps) {
+                        html += `
+                            <div class="step-item fade-in">
+                                <div class="step-status success">OK</div>
+                                <div class="step-info">
+                                    <div class="step-name">${step.name}</div>
+                                    <div class="step-detail">${step.detail}</div>
+                                </div>
+                            </div>
+                        `;
+                    }
+
+                    // Get generated files
+                    const filesResponse = await fetch(`${API_BASE}/missions/${mission.mission_id}/files`);
+                    if (filesResponse.ok) {
+                        const files = await filesResponse.json();
+                        if (files.length > 0) {
+                            const mainFile = files.find(f => f.name === 'main.py') || files[0];
+                            if (mainFile) {
+                                html += `
+                                    <div class="code-block fade-in">
+                                        <pre><span class="comment"># Generated ${mainFile.name}</span>
+${escapeHtml(mainFile.content)}</pre>
+                                    </div>
+                                `;
+                            }
+                        }
+                    }
+                }
+
+                html += `
+                    <div class="step-item fade-in" style="margin-top: 16px;">
+                        <div class="step-status success">OK</div>
+                        <div class="step-info">
+                            <div class="step-name" style="color: var(--success);">Mission completed successfully!</div>
+                            <div class="step-detail">Workspace: ${mission.workspace || '~/deepforge_workspaces/' + mission.mission_id.substring(0, 8)}</div>
+                        </div>
+                    </div>
+                `;
+                
+                outputEl.innerHTML = html;
+
+                // Update status dot
+                blockEl.querySelector('.status-dot').classList.remove('executing');
+                blockEl.querySelector('.status-dot').classList.add('completed');
+
+                // Add to missions list
+                addMissionToList(description, mission.mission_id);
+                
+            } catch (error) {
+                outputEl.innerHTML = `
+                    <div class="step-item fade-in">
+                        <div class="step-status" style="background: rgba(239, 68, 68, 0.2); color: var(--error);">ERROR</div>
+                        <div class="step-info">
+                            <div class="step-name" style="color: var(--error);">Mission failed</div>
+                            <div class="step-detail">${error.message}</div>
+                        </div>
+                    </div>
+                `;
+                blockEl.querySelector('.status-dot').classList.remove('executing');
+                blockEl.querySelector('.status-dot').classList.add('failed');
+            }
+        }
+
+        function generateStepsFromDescription(description) {
+            const desc = description.toLowerCase();
+            const steps = [];
+
+            if (desc.includes('todo') || desc.includes('task')) {
+                steps.push(
+                    { name: 'Create project structure', detail: 'Setting up Python project' },
+                    { name: 'Implement todo list class', detail: 'Creating TodoList with add, remove, list methods' },
+                    { name: 'Add CLI interface', detail: 'Building command-line interface' },
+                    { name: 'Write tests', detail: 'Creating unit tests' }
+                );
+            } else if (desc.includes('api') || desc.includes('rest')) {
+                steps.push(
+                    { name: 'Create project structure', detail: 'Setting up FastAPI project' },
+                    { name: 'Set up backend server', detail: 'Configuring FastAPI application' },
+                    { name: 'Implement API endpoints', detail: 'Creating REST routes' },
+                    { name: 'Add database models', detail: 'Setting up data models' },
+                    { name: 'Write tests', detail: 'Creating API tests' }
+                );
+            } else if (desc.includes('web') || desc.includes('react') || desc.includes('frontend')) {
+                steps.push(
+                    { name: 'Create project structure', detail: 'Setting up full-stack project' },
+                    { name: 'Set up frontend framework', detail: 'Initializing React application' },
+                    { name: 'Set up backend server', detail: 'Configuring Node.js/Express server' },
+                    { name: 'Implement core features', detail: 'Building UI components and API' },
+                    { name: 'Write tests', detail: 'Creating component and integration tests' }
+                );
+            } else {
+                steps.push(
+                    { name: 'Create project structure', detail: 'Setting up project' },
+                    { name: 'Implement core features', detail: 'Building main functionality' },
+                    { name: 'Write tests', detail: 'Creating tests' },
+                    { name: 'Package for deployment', detail: 'Preparing distribution' }
+                );
+            }
+
+            return steps;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        // Add mission to sidebar
+        function addMissionToList(description, missionId) {
+            const list = document.getElementById('missionsList');
+            const item = document.createElement('div');
+            item.className = 'mission-item';
+            item.setAttribute('data-mission-id', missionId);
+            item.onclick = () => {
+                currentMissionId = missionId;
+                loadMission(missionId);
+            };
+            item.innerHTML = `
+                <div class="mission-title">${description.substring(0, 30)}...</div>
+                <div class="mission-status">
+                    <span class="status-dot completed"></span>
+                    <span style="color: var(--text-muted);">completed</span>
+                </div>
+            `;
+            list.insertBefore(item, list.firstChild);
+            if (!currentMissionId) {
+                currentMissionId = missionId;
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Load missions on startup
+        async function loadMissions() {
+            try {
+                const response = await fetch(`${API_BASE}/missions`);
+                if (response.ok) {
+                    const missions = await response.json();
+                    missions.slice(0, 10).forEach(mission => {
+                        addMissionToList(mission.description, mission.mission_id);
+                    });
+                }
+            } catch (e) {
+                // Ignore errors
+            }
+        }
+
+        async function loadMission(missionId) {
+            showTerminal();
+            try {
+                const response = await fetch(`${API_BASE}/missions/${missionId}`);
+                if (response.ok) {
+                    const mission = await response.json();
+                    document.getElementById('headerTitle').textContent = mission.description.substring(0, 50);
+                    
+                    const output = document.getElementById('terminalOutput');
+                    output.innerHTML = '';
+                    
+                    const block = document.createElement('div');
+                    block.className = 'output-block fade-in';
+                    block.innerHTML = `
+                        <div class="output-header">
+                            <div class="output-title">
+                                <span class="status-dot ${mission.status === 'completed' ? 'completed' : 'executing'}"></span>
+                                Mission: ${mission.description.substring(0, 40)}...
+                            </div>
+                            <span class="output-timestamp">${new Date().toLocaleTimeString()}</span>
+                        </div>
+                        <div class="output-content">
+                            <div class="step-item">
+                                <div class="step-info">
+                                    <div class="step-name">Status: ${mission.status}</div>
+                                    <div class="step-detail">Steps: ${mission.completed_steps} / ${mission.total_steps}</div>
+                                    ${mission.workspace ? `<div class="step-detail">Workspace: ${mission.workspace}</div>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    output.appendChild(block);
+                }
+            } catch (e) {
+                console.error('Failed to load mission:', e);
+            }
+        }
+
+        async function loadModelsInfo() {
+            const modelsInfo = document.getElementById('modelsInfo');
+            try {
+                const response = await fetch(`${API_BASE}/models/active`);
+                if (response.ok) {
+                    const data = await response.json();
+                    const model = data.model;
+                    modelsInfo.innerHTML = `
+                        <div class="output-block fade-in">
+                            <div class="output-header">
+                                <div class="output-title">Active Model</div>
+                            </div>
+                            <div class="output-content">
+                                <div class="step-item">
+                                    <div class="step-info">
+                                        <div class="step-name">${model.name}</div>
+                                        <div class="step-detail">ID: ${model.id}</div>
+                                        <div class="step-detail">Status: ${model.status}</div>
+                                        ${model.path ? `<div class="step-detail">Path: ${model.path}</div>` : ''}
+                                        <div class="step-detail">Loaded: ${model.loaded ? 'Yes' : 'No'}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    modelsInfo.innerHTML = '<div class="step-item"><div class="step-info"><div class="step-name">Failed to load model information</div></div></div>';
+                }
+            } catch (e) {
+                modelsInfo.innerHTML = '<div class="step-item"><div class="step-info"><div class="step-name">Error loading model information</div></div></div>';
+            }
+        }
+
+        // Chat functions
+        let currentMissionId = null;
+
+        function loadChatHistory() {
+            if (!currentMissionId) {
+                const missions = document.querySelectorAll('.mission-item');
+                if (missions.length > 0) {
+                    currentMissionId = missions[0].getAttribute('data-mission-id');
+                }
+            }
+        }
+
+        async function sendChatMessage(query) {
+            if (!currentMissionId) {
+                alert('No active mission. Create a mission first.');
+                return;
+            }
+
+            const chatOutput = document.getElementById('chatOutput');
+            const userMsg = document.createElement('div');
+            userMsg.className = 'step-item fade-in';
+            userMsg.innerHTML = `
+                <div class="step-info">
+                    <div class="step-name" style="color: var(--accent-primary);">You: ${escapeHtml(query)}</div>
+                </div>
+            `;
+            chatOutput.appendChild(userMsg);
+            chatOutput.scrollTop = chatOutput.scrollHeight;
+
+            try {
+                const response = await fetch(`${API_BASE}/missions/${currentMissionId}/chat`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({query: query})
+                });
+
+                if (!response.ok) {
+                    let errorText = '';
+                    try {
+                        errorText = await response.text();
+                    } catch (e) {
+                        errorText = response.statusText;
+                    }
+                    throw new Error(`HTTP ${response.status}: ${errorText || 'Unknown error'}`);
+                }
+
+                const data = await response.json();
+
+                const aiMsg = document.createElement('div');
+                aiMsg.className = 'step-item fade-in';
+                aiMsg.innerHTML = `
+                    <div class="step-info">
+                        <div class="step-name" style="color: var(--success);">AI: ${escapeHtml(data.explanation)}</div>
+                        <div class="step-detail">Confidence: ${(data.confidence * 100).toFixed(0)}%</div>
+                        ${data.patched_files && data.patched_files.length > 0 ? `<div class="step-detail">Files updated: ${data.patched_files.join(', ')}</div>` : ''}
+                    </div>
+                `;
+                chatOutput.appendChild(aiMsg);
+
+                if (data.diff) {
+                    const diffBlock = document.createElement('div');
+                    diffBlock.className = 'code-block fade-in';
+                    diffBlock.style.marginTop = '12px';
+                    diffBlock.innerHTML = `<pre style="font-size: 11px; max-height: 200px; overflow: auto;">${escapeHtml(data.diff)}</pre>`;
+                    chatOutput.appendChild(diffBlock);
+                }
+
+                chatOutput.scrollTop = chatOutput.scrollHeight;
+            } catch (error) {
+                const errorMsg = document.createElement('div');
+                errorMsg.className = 'step-item fade-in';
+                errorMsg.innerHTML = `
+                    <div class="step-info">
+                        <div class="step-name" style="color: var(--error);">Error: ${escapeHtml(error.message)}</div>
+                    </div>
+                `;
+                chatOutput.appendChild(errorMsg);
+            }
+        }
+
+        // Wire chat input
+        const originalHandleKeyDown = handleKeyDown;
+        function handleKeyDown(event) {
+            const chatScreen = document.getElementById('chatScreen');
+            if (chatScreen && chatScreen.style.display !== 'none') {
+                if (event.key === 'Enter' && !event.shiftKey) {
+                    event.preventDefault();
+                    const input = document.getElementById('commandInput');
+                    const query = input.value.trim();
+                    if (query) {
+                        sendChatMessage(query);
+                        input.value = '';
+                        autoResize(input);
+                    }
+                }
+            } else {
+                if (event.key === 'Enter' && !event.shiftKey) {
+                    event.preventDefault();
+                    runCommand();
+                }
+            }
+        }
+
+        // Make functions globally accessible - MUST be after function definitions
+        // These will be set in DOMContentLoaded after functions are defined
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('DeepForge UI initialized');
+            
+            // Test click handlers
+            const navItems = document.querySelectorAll('.nav-item');
+            console.log(`Found ${navItems.length} nav items`);
+            
+            // Verify all elements exist
+            const elements = ['welcomeScreen', 'terminalOutput', 'modelsScreen', 'settingsScreen', 'chatScreen', 'headerTitle'];
+            elements.forEach(id => {
+                const el = document.getElementById(id);
+                if (!el) {
+                    console.warn(`Element ${id} not found!`);
+                } else {
+                    console.log(`Element ${id} found`);
+                }
+            });
+            
+            // Test if functions are accessible
+            console.log('showWelcome:', typeof window.showWelcome);
+            console.log('runQuickAction:', typeof window.runQuickAction);
+            console.log('runCommand:', typeof window.runCommand);
+            
+            // Use data-action attributes (NO onclick)
+            navItems.forEach((item) => {
+                const action = item.getAttribute('data-action');
+                if (action) {
+                    item.style.cursor = 'pointer';
+                    item.addEventListener('click', (e) => {
+                        console.log('Nav item CLICKED:', action);
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        // Remove active from all
+                        navItems.forEach(n => n.classList.remove('active'));
+                        item.classList.add('active');
+                        
+                        // Call function by name
+                        if (action === 'showWelcome') showWelcome();
+                        else if (action === 'showTerminal') showTerminal();
+                        else if (action === 'showModels') showModels();
+                        else if (action === 'showSettings') showSettings();
+                        else if (action === 'showChat') showChat();
+                    });
+                } else {
+                    // Fallback: use index if no data-action
+                    const index = Array.from(navItems).indexOf(item);
+                    item.style.cursor = 'pointer';
+                    item.addEventListener('click', (e) => {
+                        console.log('Nav item CLICKED (index):', index);
+                        e.preventDefault();
+                        e.stopPropagation();
+                        navItems.forEach(n => n.classList.remove('active'));
+                        item.classList.add('active');
+                        if (index === 0) showWelcome();
+                        else if (index === 1) showTerminal();
+                        else if (index === 2) showModels();
+                        else if (index === 3) showSettings();
+                        else if (index === 4) showChat();
+                    });
+                }
+            });
+            
+            // Add click listeners to quick actions using data-command
+            document.querySelectorAll('.quick-action').forEach(action => {
+                const command = action.getAttribute('data-command');
+                if (command) {
+                    action.style.cursor = 'pointer';
+                    action.addEventListener('click', (e) => {
+                        console.log('Quick action clicked:', command);
+                        e.preventDefault();
+                        e.stopPropagation();
+                        runQuickAction(command);
+                    });
+                } else {
+                    // Fallback: try to get from onclick
+                    const onclickAttr = action.getAttribute('onclick');
+                    if (onclickAttr) {
+                        const match = onclickAttr.match(/runQuickAction\('([^']+)'\)/);
+                        if (match) {
+                            const cmd = match[1];
+                            action.style.cursor = 'pointer';
+                            action.addEventListener('click', (e) => {
+                                console.log('Quick action clicked (fallback):', cmd);
+                                e.preventDefault();
+                                e.stopPropagation();
+                                runQuickAction(cmd);
+                            });
+                        }
+                    }
+                }
+            });
+            
+            // New Mission button
+            const newMissionBtn = document.getElementById('newMissionBtn');
+            if (newMissionBtn) {
+                newMissionBtn.addEventListener('click', (e) => {
+                    console.log('New Mission button clicked');
+                    e.preventDefault();
+                    focusInput();
+                });
+            }
+            
+            focusInput();
+            loadMissions();
+            
+            // Set current mission from URL or first mission
+            const urlParams = new URLSearchParams(window.location.search);
+            currentMissionId = urlParams.get('mission');
+            
+            console.log('Initialization complete');
+        });
+    </script>
+</body>
+</html>
+
