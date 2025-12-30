@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeepForge - Agent-First IDE</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Title Bar -->
+        <div class="title-bar">
+            <div class="title-bar-drag-region">
+                <div class="window-title">DeepForge</div>
+            </div>
+        </div>
+
+        <!-- Main Layout -->
+        <div class="main-layout">
+            <!-- Activity Bar (Left) -->
+            <div class="activity-bar">
+                <div class="activity-item active" data-view="explorer" title="Explorer">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                    </svg>
+                </div>
+                <div class="activity-item" data-view="agents" title="Agents">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M12 6v6l4 2"></path>
+                    </svg>
+                </div>
+                <div class="activity-item" data-view="composer" title="Composer (Cmd+I)">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                </div>
+                <div class="activity-item" data-view="debug" title="Debug">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M12 6v6l4 2"></path>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="sidebar" id="sidebar">
+                <!-- Explorer View -->
+                <div class="sidebar-view active" id="explorer-view">
+                    <div class="sidebar-header">
+                        <span>EXPLORER</span>
+                        <button class="icon-button" title="New File">+</button>
+                    </div>
+                    <div class="file-tree" id="file-tree">
+                        <!-- Files loaded dynamically -->
+                    </div>
+                </div>
+
+                <!-- Agents View -->
+                <div class="sidebar-view" id="agents-view">
+                    <div class="sidebar-header">
+                        <span>AGENTS</span>
+                        <button class="icon-button" title="New Agent">+</button>
+                    </div>
+                    <div class="agents-list" id="agents-list">
+                        <!-- Agents loaded dynamically -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Editor Area -->
+            <div class="editor-area">
+                <!-- Tab Bar -->
+                <div class="tab-bar" id="tab-bar">
+                    <!-- Tabs loaded dynamically -->
+                </div>
+
+                <!-- Editor Group -->
+                <div class="editor-group" id="editor-group">
+                    <!-- Monaco editor will be mounted here -->
+                    <div id="monaco-container" class="monaco-container"></div>
+                </div>
+
+                <!-- Status Bar -->
+                <div class="status-bar">
+                    <div class="status-item">Ready</div>
+                    <div class="status-item">DeepSeek-V3.2</div>
+                    <div class="status-item" id="agent-status">No agents running</div>
+                </div>
+            </div>
+
+            <!-- Composer Panel (Right) -->
+            <div class="composer-panel" id="composer-panel" style="display: none;">
+                <div class="composer-header">
+                    <span>COMPOSER</span>
+                    <button class="icon-button" id="close-composer">×</button>
+                </div>
+                <div class="composer-content">
+                    <!-- Context Pills -->
+                    <div class="context-pills" id="context-pills"></div>
+                    
+                    <!-- Message Bubbles -->
+                    <div class="message-bubbles" id="message-bubbles"></div>
+                    
+                    <!-- Input Area -->
+                    <div class="composer-input-area">
+                        <textarea 
+                            id="composer-input" 
+                            placeholder="Describe what you want to build..."
+                            rows="3"
+                        ></textarea>
+                        <button id="composer-send">Send</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Inline Edit Overlay -->
+        <div class="inline-edit-overlay" id="inline-edit-overlay" style="display: none;">
+            <div class="inline-edit-content">
+                <div class="inline-edit-header">
+                    <span>Inline Edit (Cmd+K)</span>
+                    <button class="icon-button" id="close-inline-edit">×</button>
+                </div>
+                <div class="diff-preview" id="diff-preview"></div>
+                <div class="inline-edit-actions">
+                    <button id="apply-edit">Apply</button>
+                    <button id="reject-edit">Reject</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Command Palette -->
+        <div class="command-palette" id="command-palette" style="display: none;">
+            <input type="text" id="command-input" placeholder="Type a command...">
+            <div class="command-list" id="command-list"></div>
+        </div>
+    </div>
+
+    <!-- Monaco Editor -->
+    <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js"></script>
+    <script src="renderer.js"></script>
+</body>
+</html>
+
+
+
+
+
+
+
