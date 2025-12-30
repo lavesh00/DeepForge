@@ -46,3 +46,12 @@ ${HOME}/
 ${log_dir}/
 ${state_dir}/
 
+# Node modules
+node_modules/
+
+
+
+
+
+
+
