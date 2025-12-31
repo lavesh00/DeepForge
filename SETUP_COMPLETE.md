@@ -58,3 +58,10 @@ python -m interface.cli.deepforge models list
 2. Run a test mission
 3. Check generated workspaces in `~/deepforge_workspaces/`
 
+
+
+
+
+
+
+
