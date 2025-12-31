@@ -117,3 +117,10 @@ models:
 3. **Wait for download**: First startup will download model (~2-5 minutes)
 4. **Run missions**: All code generation will use DeepSeek!
 
+
+
+
+
+
+
+
